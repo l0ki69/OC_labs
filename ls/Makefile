@@ -1,2 +1,2 @@
 all:
-	gcc ls.c -o test
+	gcc ls.c -o ls

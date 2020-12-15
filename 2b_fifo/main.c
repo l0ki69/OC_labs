@@ -17,39 +17,47 @@ int main () {
 	
 	memset(buff, '\0', 100);
 	unlink("fifo");
-	if((mkfifo("fifo", 0777)) == -1){
+	if((mkfifo("fifo", 0777)) == -1)
+    {
 		printf("Can't create FIFO");
 		exit(0);
 	}
 	
     pid = fork();
-    if (pid == 0){	//CHILD - source
-		printf("CHILD: hello\n");
-        int fd = open("fifo", O_WRONLY);
-		if(fd == -1){
-			printf("CHILD: Can't open FIFO");
-			exit(0);
-		}
-		
-		time_t data = time(0);
-		sprintf(buff, "%s", ctime(&data));
-        write(fd, buff, 100);
-        close(fd);
-		
-		printf("CHILD: process terminated\n");
-		exit(1);
-    }else{	//PARENT - target
-		printf("PARENT: hello\n");
+    if (pid == 0) //CHILD - source
+    {
+        printf("CHILD: hello\n");
         int fd = open("fifo", O_RDONLY);
-		if(fd == -1){
-			printf("PARENT: Can't open FIFO");
+		if(fd == -1)
+        {
+			printf("CHILD: Can't open FIFO");
 			exit(0);
 		}
 		
         read(fd, buff, 100);
 		close(fd);
+        time_t timer = time(0);
+        printf("CHILD:\n%s%s%s\n"," child_time = ", ctime(&timer) ,buff);
+		printf("CHILD: process terminated\n");
+		exit(1);
+    }
+    else //PARENT - target
+    {
+		printf("PARENT: hello\n");
+        int fd = open("fifo", O_WRONLY);
+		if(fd == -1)
+        {
+			printf("PARENT: Can't open FIFO");
+			exit(0);
+		}
 		
-        printf("PARENT: %s\n", buff);
+		time_t data = time(0);
+        sleep(5);
+		sprintf(buff, "%s %s %s %d", " parent_time =", ctime(&data), "parent_pid =" ,getpid());
+        //printf("%s\n", buff);
+        write(fd, buff, 100);
+        close(fd);
+		
 		printf("PARENT: process terminated\n");
     }
 }

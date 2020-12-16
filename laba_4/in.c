@@ -56,7 +56,7 @@ int main()
         printf("\ntime_Consumer = %spid_Consumer = %d\n", ctime(&timer), getpid());
         printf("\n%s", addr);
         semop(semid, &sem_open, 1);
-		sleep(0.5);
+		sleep(1);
     }
     return 0;
 }

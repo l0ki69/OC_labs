@@ -61,17 +61,17 @@ int main()
         exit(0);
     }
 
-    semop(semid, &sem_open, 1);
+    //semop(semid, &sem_open, 1);
     while(1)
     {
         timer = time(0);
         if(timer != buft)
         {
-            semop(semid, &sem_lock, 1);
+            semop(semid, &sem_open, 1);
             buft = timer;
             sprintf(addr, "time_Producer = %spid_Producer = %d\n", ctime(&timer), getpid());
             sleep(1);
-            semop(semid, &sem_open, 1);
+            semop(semid, &sem_lock, 1);
         }
     }
     return 0;

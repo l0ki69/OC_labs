@@ -51,12 +51,12 @@ int main()
 
     while(1)
     {
-        semop(semid, &sem_lock, 1);
+        semop(semid, &sem_open, 1);
         time_t timer = time(0);
         printf("\ntime_Consumer = %spid_Consumer = %d\n", ctime(&timer), getpid());
         printf("\n%s", addr);
-        semop(semid, &sem_open, 1);
-	//sleep(1);
+        semop(semid, &sem_lock, 1);
+        sleep(1);
     }
     return 0;
 }

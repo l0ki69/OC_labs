@@ -11,7 +11,7 @@
 #include <sys/sem.h>
 #include <signal.h>
 
-#define FILE "Makefile"
+#define FILE "shared_memory"
 
 struct sembuf sem_lock = {0,-1,0}, sem_open = {0,1,0};
 
@@ -26,12 +26,15 @@ void funcExit(int sig)
     exit(0);
 }
 
-int main()
+
+
+int main(int argc, char* argv[])
 {
     signal(SIGINT, funcExit);
     char * addr;
+    key_t key = ftok(FILE, 'a');
     key_t semkey = ftok("/tmp", 'a');
-    shmid = (shmget(2002, 32, IPC_CREAT | 0666));
+    shmid = (shmget(key, 32, IPC_CREAT | 0666));
     int semid = (semget(semkey, 1, IPC_CREAT | 0666));
 
     if(semid == -1)
@@ -53,16 +56,32 @@ int main()
 
     time_t timer = time(0);
     time_t buft = timer;
+    int check = 1;
 
-    if (strlen(addr) != 0)
-    {   
-        //printf("%s\n", addr);
-        printf("there is already a sending process\n");
-        exit(0);
+    if (argc > 1)
+    {
+        if (strcmp(argv[1],"-f") == 0)
+        {
+            check = 1;
+        }
+        else
+        {
+            printf("such a key is not processed\n");
+            exit(0);
+        }
+    } 
+    else
+    {
+        if (strlen(addr) != 0)
+            {   
+                printf("there is already a sending process\n");
+                printf("if you want to clear memory, run the program with the flag -f\n");
+                check = 0;
+                exit(0);
+            }
     }
-
     //semop(semid, &sem_open, 1);
-    while(1)
+    while(check > 0)
     {
         timer = time(0);
         if(timer != buft)

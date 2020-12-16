@@ -10,7 +10,7 @@
 #include <sys/sem.h>
 #include <signal.h>
 
-#define FILE "Makefile"
+#define FILE "shared_memory"
 
 void funcExit(int sig)
 {
@@ -25,8 +25,9 @@ int main()
 {
     signal(SIGINT, funcExit);
     char * addr;
+    key_t key = ftok(FILE, 'a');
     key_t semkey = ftok("/tmp", 'a');
-    int shmid = (shmget(2002, 32, 0666));
+    int shmid = (shmget(key, 32, 0666));
     int semid = (semget(semkey, 1, 0666));
 
     if(semid == -1)

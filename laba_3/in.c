@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <signal.h>
 
-#define FILE "out.c"
+#define FILE "shared_memory"
 
 void funcExit(int sig)
 {
@@ -23,7 +23,8 @@ int main()
 
 	char * addr;
 	int mem;
-	if( (mem= (shmget(2002, 32, IPC_EXCL))) == -1 )
+    key_t key = ftok(FILE, 'a');
+	if( (mem = (shmget(key, 32, IPC_EXCL))) == -1 )
     {
         printf("SM open eror\n");
         exit(0);

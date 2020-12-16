@@ -11,7 +11,7 @@
 #include <signal.h>
 
 
-#define FILE "Makefile"
+#define FILE "shared_memory"
 
 int shmid;
 
@@ -28,7 +28,8 @@ int main()
 {
     signal(SIGINT, funcExit);
     char * addr;
-    shmid = (shmget(2002, 32, IPC_CREAT | 0666));
+    key_t key = ftok(FILE, 'a');
+    shmid = (shmget(key, 32, IPC_CREAT | 0666));
 
     if( shmid == -1 )
     {

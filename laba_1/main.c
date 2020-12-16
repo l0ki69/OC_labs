@@ -5,7 +5,7 @@
 #include<unistd.h>
 
 void funcExit(){
-	printf("atexit in proccess with pid = %d\n",getpid());
+	printf("atexit finished working with pid = %d\n",getpid());
 	return;
 }
 

@@ -90,7 +90,7 @@ int main()
         pthread_mutex_lock(&mutex);
        	sprintf(addr, "%d", count);
         pthread_mutex_unlock(&mutex);
-		sleep (1);
+	sleep (1);
         count++;
 	}
 

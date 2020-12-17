@@ -55,7 +55,6 @@ void* read_func()
 
 int main()
 {
-	//  Thread initialization
     signal(SIGINT, funcExit);
 
     key_t key = ftok(FILE, 'a');

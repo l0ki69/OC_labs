@@ -9,43 +9,22 @@
 #include <sys/shm.h>
 #include <signal.h>
 
-#define FILE "shared_memory"
-
 pthread_mutex_t mutex;
 
-int shmid;
+int count = 0;
 
 void funcExit(int sig)
 {
     printf("\n");
-    struct shmid_ds *buf = 0;
-    shmctl(shmid, IPC_RMID, buf);
-
     exit(0);
 }
 
-void* read_func()
+void* read_func(int num)
 {
-	key_t key = ftok(FILE, 'a');
-	shmid = shmget (key, 32, IPC_EXCL | 0666);
-
-    if (shmid == -1)
-    {
-    	printf ("Shared memory creation failed\n");
-        return 0;
-    }
-
-	char* addr = shmat (shmid, NULL, 0);
-	if (addr == (char*)-1)
-    {
-		printf ("Shmat failed\n");
-		return 0;
-	}
-
 	while (1)
     {
         pthread_mutex_lock (&mutex);
-		printf ("%lx %s\n", pthread_self(), addr);
+		printf ("Я %d-й поток, мой tid =  %lx, счетчик  = %d\n", num , pthread_self(), count);
 		pthread_mutex_unlock(&mutex);
 		sleep(1);
 	}
@@ -53,46 +32,43 @@ void* read_func()
 	return 0;
 }
 
+void* write_func()
+{
+	while (1)
+	{   
+		pthread_mutex_unlock(&mutex);
+		count++;
+		printf("Я увеличил счетчик до значения %d\n", count);
+		sleep(rand() % 10);
+		pthread_mutex_lock(&mutex);
+		if (count > 10000) count = 0;
+	}
+}
+
 int main()
 {
 	//  Thread initialization
     signal(SIGINT, funcExit);
 
-    key_t key = ftok(FILE, 'a');
-	int smid = shmget (key, 32, IPC_CREAT | 0666);
-
-	pthread_t pth[10];
+	pthread_t pth[11];
 
 	pthread_mutex_init (&mutex, NULL);
 
+	fsync(&stdout);
+
     for (int i = 0; i < 10; i++)
     {   
-	    pthread_create (&pth[i], NULL, read_func, NULL);
+		int num = i + 1;
+	    pthread_create (&pth[i], NULL, read_func, num);
     }
 
-	if (smid == -1)
+	pthread_create(&pth[10], NULL, write_func, NULL);
+
+	for (int i = 0; i < 11; i++)
 	{
-		printf ("Shared memory creation failed\n");
-		return 0;
+		pthread_join(&pth[i], NULL);
 	}
 
-	char* addr = shmat (smid, NULL, 0);
-	if (addr == (char*)-1)
-    {
-		printf ("Shmat failed\n");
-		return 0;
-	}
-
-    int count = 0;
-
-	while (1)
-    {
-        pthread_mutex_lock(&mutex);
-       	sprintf(addr, "%d", count);
-        pthread_mutex_unlock(&mutex);
-	sleep (1);
-        count++;
-	}
 
 	pthread_mutex_destroy(&mutex);
 	return 0;

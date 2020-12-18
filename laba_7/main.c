@@ -52,7 +52,7 @@ void *write_func(void *arg)
 			printf("Сработал broadcast\n");
 			pthread_cond_broadcast(&condition);
 		}
-		else
+		else	
 		{	
 			printf("Сработал signal\n");
 			pthread_cond_signal(&condition);
@@ -63,12 +63,14 @@ void *write_func(void *arg)
   	}
 }
 
-int main() {
+int main() 
+{
 	signal(SIGINT, funcExit);
 
 	pthread_t pth[READ_THREAD_COUNT + 1];
 	int thread_nums[READ_THREAD_COUNT];
 	pthread_mutex_init(&mutex, NULL);
+	pthread_cond_init(&condition, NULL);
 
 	for (int i = 0; i < READ_THREAD_COUNT; i++) 
 	{

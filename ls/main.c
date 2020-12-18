@@ -30,7 +30,7 @@ int myls(struct dirent * dirr)
 	printf((S.st_mode & S_IROTH)?"r":"-");
 	printf((S.st_mode & S_IWOTH)?"w":"-");
 	printf((S.st_mode & S_IXOTH)?"x":"-");
-	printf(" %ld", S.st_nlink);
+	printf(" %hu", S.st_nlink);
 	struct passwd * pwd;
 	pwd = getpwuid(S.st_uid);
 	printf(" %s", pwd->pw_name);

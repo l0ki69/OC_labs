@@ -46,8 +46,17 @@ void *write_func(void *arg)
 		if (count > 10000)
 		count = 0;
 		printf("Я увеличил счетчик до значения %d\n", count);
-		printf("...and then relax...");
-		pthread_cond_broadcast (&condition);
+		printf("...and then relax...\n");
+		if (rand() % 2 == 0)
+		{	
+			printf("Сработал broadcast\n");
+			pthread_cond_broadcast(&condition);
+		}
+		else
+		{	
+			printf("Сработал signal\n");
+			pthread_cond_signal(&condition);
+		}
 		fflush(stdout);
 		sleep(rand() % 10);
 		pthread_mutex_unlock(&mutex);
